@@ -1,0 +1,7 @@
+tracking_uri: "http://0.0.0.0:5000"   # MLflow server started by vast_setup.sh
+experiment_name: "text2sql-qlora"
+artifact_bucket: "s3://text2sql-mlflow-artifacts"
+run_tags:
+  project: "text2sql"
+  model_family: "phi3-mini"
+  dataset: "b-mc2/sql-create-context"

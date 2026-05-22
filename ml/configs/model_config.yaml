@@ -1,0 +1,27 @@
+# Primary: microsoft/Phi-3-mini-4k-instruct (3.8B → Q4_K_M ~2.2GB, fits Lambda 8GB RAM)
+# Alternative: meta-llama/Meta-Llama-3.1-8B-Instruct (~4.7GB Q4_K_M)
+base_model_id: "microsoft/Phi-3-mini-4k-instruct"
+model_revision: "main"
+trust_remote_code: true
+max_seq_length: 1024
+
+qlora:
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 64
+  lora_alpha: 128
+  lora_dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
