@@ -1,0 +1,23 @@
+dataset_id: "b-mc2/sql-create-context"
+dataset_split: "train"
+val_size: 0.05        # ~3.9k examples held out for EX evaluation
+seed: 42
+max_samples: null     # null = full 78k
+
+output_dir: "./outputs/checkpoints"
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 4   # effective batch = 16
+learning_rate: 2.0e-4
+num_train_epochs: 3
+warmup_ratio: 0.05
+lr_scheduler_type: "cosine"
+bf16: true
+gradient_checkpointing: true
+logging_steps: 25
+eval_steps: 200
+save_steps: 200
+save_total_limit: 3
+load_best_model_at_end: true
+metric_for_best_model: "eval_loss"
+report_to: "none"     # MLflow logging is handled by callback
