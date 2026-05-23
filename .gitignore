@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+outputs/
+mlflow.db
+mlflow_server.log
+*.gguf
+.env
+docs/
