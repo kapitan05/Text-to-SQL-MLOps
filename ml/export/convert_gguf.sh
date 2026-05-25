@@ -26,10 +26,8 @@ if [ ! -f "$LLAMA_CPP_DIR/build/bin/llama-quantize" ]; then
     cmake --build "$LLAMA_CPP_DIR/build" --config Release -j "$(nproc)"
 fi
 
-pip install -q gguf sentencepiece
-
 echo "Step 1/2: Converting HF checkpoint → FP16 GGUF ..."
-python "$LLAMA_CPP_DIR/convert_hf_to_gguf.py" \
+uv run python "$LLAMA_CPP_DIR/convert_hf_to_gguf.py" \
     "$MERGED_DIR" \
     --outtype f16 \
     --outfile "$OUTPUT_DIR/model_fp16.gguf"
