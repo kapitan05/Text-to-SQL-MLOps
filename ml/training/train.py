@@ -88,8 +88,10 @@ def main() -> None:
     model = apply_lora(model, cfg.lora)
     model.print_trainable_parameters()
 
+    # max_seq_length was removed from SFTConfig in TRL >=0.15; set on tokenizer instead
+    tokenizer.model_max_length = cfg.max_seq_length
+
     sft_config = SFTConfig(
-        max_seq_length=cfg.max_seq_length,
         dataset_text_field="text",
         **cfg.sft,
     )
