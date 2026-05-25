@@ -8,3 +8,4 @@ mlflow_server.log
 *.gguf
 .env
 docs/
+CLAUDE.md
