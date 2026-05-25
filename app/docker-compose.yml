@@ -1,0 +1,29 @@
+services:
+  localstack:
+    image: localstack/localstack:3
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: s3,kinesis,dynamodb
+      DEFAULT_REGION: us-east-1
+      LOCALSTACK_AUTH_TOKEN: ""
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  lambda:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      DYNAMODB_TABLE: query_results
+      FAILED_SQL_BUCKET: text2sql-failed-sql
+    depends_on:
+      localstack:
+        condition: service_healthy
