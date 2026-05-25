@@ -2,7 +2,7 @@
 # Alternative: meta-llama/Meta-Llama-3.1-8B-Instruct (~4.7GB Q4_K_M)
 base_model_id: "microsoft/Phi-3-mini-4k-instruct"
 model_revision: "main"
-trust_remote_code: true
+trust_remote_code: false
 max_seq_length: 1024
 
 qlora:
