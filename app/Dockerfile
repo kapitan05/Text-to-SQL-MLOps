@@ -19,6 +19,8 @@ RUN uv pip install --system --target /packages \
 # Stage 2 — clean Lambda image
 FROM public.ecr.aws/lambda/python:3.11
 
+RUN yum update -y && yum install -y libgomp && yum clean all
+
 COPY --from=builder /packages ${LAMBDA_TASK_ROOT}
 COPY src/ ${LAMBDA_TASK_ROOT}/src/
 # Rename the GGUF file to a stable path; override via GGUF_PATH env var if needed
