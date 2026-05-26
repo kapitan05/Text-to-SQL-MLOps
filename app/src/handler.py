@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import time
+from contextlib import closing
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -25,9 +26,8 @@ def lambda_handler(event: dict[str, Any], context: object) -> dict[str, Any]:
         t0 = time.monotonic()
         try:
             sql = inference.generate_sql(req.question, req.context)
-            conn = create_db_from_ddl(req.context)
-            rows = execute_sql(conn, sql)
-            conn.close()
+            with closing(create_db_from_ddl(req.context)) as conn:
+                rows = execute_sql(conn, sql)
             latency_ms = (time.monotonic() - t0) * 1000
             expires_at = int(
                 (datetime.now(UTC) + timedelta(hours=_TTL_HOURS)).timestamp()
