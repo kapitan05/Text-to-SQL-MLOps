@@ -1,11 +1,3 @@
-terraform {
-  backend "s3" {
-    bucket = "maksim-admin-terraform-state-text2sql"
-    key    = "text2sql/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
-
 module "s3" {
   source  = "./modules/s3"
   project = var.project
