@@ -57,7 +57,7 @@ resource "aws_lambda_function" "inference" {
   package_type  = "Image"
   image_uri     = var.ecr_image_uri
   timeout       = 300
-  memory_size   = 8192
+  memory_size   = 3008
 
   reserved_concurrent_executions = 5
 
