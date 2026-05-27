@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+from decimal import Decimal
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
@@ -33,5 +34,7 @@ _RETRY = retry(
 
 @_RETRY
 def write_result(item: DynamoResultItem) -> None:
-    _get_table().put_item(Item=item.model_dump())
+    data = item.model_dump()
+    data["latency_ms"] = Decimal(str(data["latency_ms"]))
+    _get_table().put_item(Item=data)
     logger.info("Wrote result for query_id=%s", item.query_id)
