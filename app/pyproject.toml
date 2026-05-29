@@ -21,6 +21,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = ["integration: requires LocalStack (docker compose up localstack localstack-init -d)"]
 
 [tool.mypy]
 python_version = "3.11"
