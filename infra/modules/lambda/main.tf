@@ -56,8 +56,8 @@ resource "aws_lambda_function" "inference" {
   role          = aws_iam_role.lambda.arn
   package_type  = "Image"
   image_uri     = var.ecr_image_uri
-  timeout       = 300
-  memory_size   = 8192
+  timeout       = 500
+  memory_size   = 3008
 
   reserved_concurrent_executions = 5
 
@@ -65,6 +65,8 @@ resource "aws_lambda_function" "inference" {
     variables = {
       DYNAMODB_TABLE    = var.dynamodb_table_name
       FAILED_SQL_BUCKET = var.failed_sql_bucket
+      MODEL_N_THREADS   = "2"
+      MODEL_N_CTX       = "512"
     }
   }
 }
@@ -73,5 +75,5 @@ resource "aws_lambda_event_source_mapping" "kinesis" {
   event_source_arn  = var.kinesis_stream_arn
   function_name     = aws_lambda_function.inference.arn
   starting_position = "LATEST"
-  batch_size        = 10
+  batch_size        = 1
 }

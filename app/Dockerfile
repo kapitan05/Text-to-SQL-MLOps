@@ -29,7 +29,7 @@ COPY src/ ${LAMBDA_TASK_ROOT}/src/
 COPY models/ /opt/models/
 
 ENV GGUF_PATH=/opt/models/model_q4_k_m.gguf
-ENV MODEL_N_CTX=1024
-ENV MODEL_N_THREADS=4
+ENV MODEL_N_CTX=256
+ENV MODEL_N_THREADS=2
 
 CMD ["src.handler.lambda_handler"]

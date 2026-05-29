@@ -10,3 +10,5 @@ mlflow_server.log
 docs/
 CLAUDE.md
 .coverage
+.terraform.lock.hcl
+.terraform/
