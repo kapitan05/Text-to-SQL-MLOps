@@ -45,7 +45,7 @@ def generate_sql(question: str, context: str) -> str:
     prompt = build_prompt(context, question)
     response: Any = model(
         prompt,
-        max_tokens=128,
+        max_tokens=64,
         temperature=0.0,
         stop=["###", "\n\n"],
     )
