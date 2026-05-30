@@ -34,7 +34,7 @@ resource "aws_sagemaker_endpoint_configuration" "inference" {
     variant_name           = "primary"
     model_name             = aws_sagemaker_model.inference.name
     initial_instance_count = 1
-    instance_type          = "ml.g4dn.xlarge"
+    instance_type          = "ml.m5.xlarge"
   }
 }
 

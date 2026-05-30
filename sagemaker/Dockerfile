@@ -1,6 +1,6 @@
 # GPU-capable SageMaker inference container for text2sql GGUF model
 # Build context: repo root (needs models/ and sagemaker/)
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -25,4 +25,4 @@ ENV MODEL_N_CTX=512
 ENV MODEL_N_THREADS=4
 
 EXPOSE 8080
-CMD ["python3", "/serve.py"]
+ENTRYPOINT ["python3", "/serve.py"]
