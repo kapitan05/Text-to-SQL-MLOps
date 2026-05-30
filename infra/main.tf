@@ -13,15 +13,23 @@ module "dynamodb" {
   project = var.project
 }
 
+module "sagemaker" {
+  source              = "./modules/sagemaker"
+  project             = var.project
+  sagemaker_image_uri = var.sagemaker_image_uri
+}
+
 module "lambda" {
-  source                = "./modules/lambda"
-  project               = var.project
-  ecr_image_uri         = var.ecr_image_uri
-  kinesis_stream_arn    = module.kinesis.stream_arn
-  failed_sql_bucket     = module.s3.failed_sql_bucket
-  failed_sql_bucket_arn = module.s3.failed_sql_bucket_arn
-  dynamodb_table_name   = module.dynamodb.table_name
-  dynamodb_table_arn    = module.dynamodb.table_arn
+  source                  = "./modules/lambda"
+  project                 = var.project
+  ecr_image_uri           = var.ecr_image_uri
+  kinesis_stream_arn      = module.kinesis.stream_arn
+  failed_sql_bucket       = module.s3.failed_sql_bucket
+  failed_sql_bucket_arn   = module.s3.failed_sql_bucket_arn
+  dynamodb_table_name     = module.dynamodb.table_name
+  dynamodb_table_arn      = module.dynamodb.table_arn
+  sagemaker_endpoint_name = module.sagemaker.endpoint_name
+  sagemaker_endpoint_arn  = module.sagemaker.endpoint_arn
 }
 
 module "api_gateway" {

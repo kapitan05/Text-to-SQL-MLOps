@@ -43,6 +43,12 @@ data "aws_iam_policy_document" "permissions" {
     actions   = ["dynamodb:PutItem"]
     resources = [var.dynamodb_table_arn]
   }
+
+  statement {
+    sid       = "SageMakerInvoke"
+    actions   = ["sagemaker:InvokeEndpoint"]
+    resources = [var.sagemaker_endpoint_arn]
+  }
 }
 
 resource "aws_iam_role_policy" "permissions" {
@@ -56,17 +62,18 @@ resource "aws_lambda_function" "inference" {
   role          = aws_iam_role.lambda.arn
   package_type  = "Image"
   image_uri     = var.ecr_image_uri
-  timeout       = 500
-  memory_size   = 3008
+  timeout       = 60
+  memory_size   = 256
+
+  architectures = ["arm64"]
 
   reserved_concurrent_executions = 5
 
   environment {
     variables = {
-      DYNAMODB_TABLE    = var.dynamodb_table_name
-      FAILED_SQL_BUCKET = var.failed_sql_bucket
-      MODEL_N_THREADS   = "2"
-      MODEL_N_CTX       = "512"
+      DYNAMODB_TABLE          = var.dynamodb_table_name
+      FAILED_SQL_BUCKET       = var.failed_sql_bucket
+      SAGEMAKER_ENDPOINT_NAME = var.sagemaker_endpoint_name
     }
   }
 }

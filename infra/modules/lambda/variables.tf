@@ -26,3 +26,11 @@ variable "dynamodb_table_name" {
 variable "dynamodb_table_arn" {
   type = string
 }
+
+variable "sagemaker_endpoint_name" {
+  type = string
+}
+
+variable "sagemaker_endpoint_arn" {
+  type = string
+}
