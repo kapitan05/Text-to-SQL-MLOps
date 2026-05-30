@@ -1,0 +1,9 @@
+[project]
+name = "text2sql-sagemaker"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.0.0",
+    "llama-cpp-python>=0.2.0",
+    "prometheus-client>=0.20.0",
+]
