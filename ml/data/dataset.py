@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
 from datasets import DatasetDict, load_dataset
+from pydantic import BaseModel
 
 from modeling.prompts import build_prompt
 
 
 class SQLExample(BaseModel):
     question: str
-    context: str   # DDL (CREATE TABLE statements)
-    answer: str    # gold SQL
+    context: str  # DDL (CREATE TABLE statements)
+    answer: str  # gold SQL
 
 
 class DatasetConfig(BaseModel):

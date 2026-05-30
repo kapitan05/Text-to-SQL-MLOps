@@ -3,14 +3,17 @@
 
 Usage (from ml/ directory):
     PYTHONPATH=. uv run python training/train.py
-    PYTHONPATH=. uv run python training/train.py --model-config configs/model_config.yaml
+    PYTHONPATH=. uv run python training/train.py \
+        --model-config configs/model_config.yaml
 """
+
 from __future__ import annotations
 
 import argparse
 import logging
 import os
 from pathlib import Path
+from typing import cast
 
 import mlflow
 import yaml
@@ -44,7 +47,7 @@ class FullConfig(BaseModel):
 
 
 def _read_yaml(path: str) -> dict[str, object]:
-    return yaml.safe_load(Path(path).read_text())  # type: ignore[return-value]
+    return cast(dict[str, object], yaml.safe_load(Path(path).read_text()))
 
 
 def load_config(model_cfg: str, train_cfg: str, mlflow_cfg: str) -> FullConfig:
@@ -103,14 +106,16 @@ def main() -> None:
     )
 
     with mlflow.start_run(tags=cfg.mlflow.run_tags) as run:
-        mlflow.log_params({
-            "base_model": cfg.model_id,
-            "lora_r": cfg.lora.r,
-            "lora_alpha": cfg.lora.lora_alpha,
-            "learning_rate": cfg.sft.get("learning_rate"),
-            "num_train_epochs": cfg.sft.get("num_train_epochs"),
-            "dataset": cfg.dataset.dataset_id,
-        })
+        mlflow.log_params(
+            {
+                "base_model": cfg.model_id,
+                "lora_r": cfg.lora.r,
+                "lora_alpha": cfg.lora.lora_alpha,
+                "learning_rate": cfg.sft.get("learning_rate"),
+                "num_train_epochs": cfg.sft.get("num_train_epochs"),
+                "dataset": cfg.dataset.dataset_id,
+            }
+        )
         logger.info("MLflow run_id: %s", run.info.run_id)
 
         trainer = SFTTrainer(

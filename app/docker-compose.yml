@@ -31,6 +31,20 @@ services:
         localstack:
           condition: service_healthy
 
+  fake-sagemaker:
+    image: python:3.11-slim
+    command: >
+      sh -c "pip install flask -q && python /fake_sagemaker.py"
+    volumes:
+      - ./scripts/fake_sagemaker.py:/fake_sagemaker.py
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   lambda:
     build: .
     ports:
@@ -42,10 +56,14 @@ services:
       AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-east-1
       AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_ENDPOINT_URL_SAGEMAKER_RUNTIME: http://fake-sagemaker:8080
       DYNAMODB_TABLE: query_results
       FAILED_SQL_BUCKET: text2sql-failed-sql
+      SAGEMAKER_ENDPOINT_NAME: text2sql-inference
     depends_on:
       localstack:
         condition: service_healthy
       localstack-init:
         condition: service_completed_successfully
+      fake-sagemaker:
+        condition: service_healthy

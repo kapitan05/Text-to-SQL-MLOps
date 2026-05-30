@@ -42,6 +42,7 @@ class TestWriteResult:
         assert item_written["sql"] == "SELECT COUNT(*) FROM t"
         assert item_written["rows"] == '[{"n": 1}]'
         from decimal import Decimal
+
         assert isinstance(item_written["latency_ms"], Decimal)
 
     def test_retries_on_failure_then_raises(self) -> None:
