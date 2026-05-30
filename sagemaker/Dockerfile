@@ -12,7 +12,8 @@ RUN apt-get update && \
 RUN CMAKE_ARGS="-DGGML_CUDA=on" pip3 install --no-cache-dir \
     "llama-cpp-python<0.3.0" \
     "flask>=3.0.0" \
-    "pydantic>=2.8.0"
+    "pydantic>=2.8.0" \
+    "prometheus-client>=0.19.0"
 
 COPY models/model_q4_k_m.gguf /opt/ml/model/model_q4_k_m.gguf
 COPY sagemaker/serve.py /serve.py
