@@ -12,3 +12,4 @@ CLAUDE.md
 .coverage
 .terraform.lock.hcl
 .terraform/
+MONITORING_PLAN.md
