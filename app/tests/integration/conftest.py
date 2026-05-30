@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 import boto3
 import pytest
@@ -25,7 +26,10 @@ def _localstack_reachable() -> bool:
 @pytest.fixture(scope="session", autouse=True)
 def localstack_env() -> Generator[None, None, None]:
     if not _localstack_reachable():
-        pytest.skip("LocalStack not reachable at http://localhost:4566 — run: docker compose up localstack localstack-init -d")
+        pytest.skip(
+            "LocalStack not reachable at http://localhost:4566"
+            " — run: docker compose up localstack localstack-init -d"
+        )
 
     # Set before any src.* import fires lru_cache
     os.environ.setdefault("AWS_ENDPOINT_URL", _ENDPOINT)
@@ -34,6 +38,7 @@ def localstack_env() -> Generator[None, None, None]:
     os.environ.setdefault("AWS_DEFAULT_REGION", _REGION)
     os.environ.setdefault("DYNAMODB_TABLE", _TABLE)
     os.environ.setdefault("FAILED_SQL_BUCKET", _BUCKET)
+    os.environ.setdefault("SAGEMAKER_ENDPOINT_NAME", "text2sql-inference")
 
     # Evict any previously cached real-AWS connections
     from src.dynamo import _get_table

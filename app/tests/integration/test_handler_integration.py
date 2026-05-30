@@ -19,7 +19,11 @@ def _kinesis_event(query_id: str, question: str = "How many orders?") -> dict[st
     payload = {"query_id": query_id, "question": question, "context": _CONTEXT}
     return {
         "Records": [
-            {"kinesis": {"data": base64.b64encode(json.dumps(payload).encode()).decode()}}
+            {
+                "kinesis": {
+                    "data": base64.b64encode(json.dumps(payload).encode()).decode()
+                }
+            }
         ]
     }
 
@@ -51,13 +55,17 @@ class TestHandlerIntegration:
             with patch("src.inference.generate_sql", side_effect=RuntimeError("boom")):
                 resp = lambda_handler(_kinesis_event(query_id), None)
             assert resp["statusCode"] == 200
-            body = json.loads(s3_client.get_object(Bucket=_BUCKET, Key=key)["Body"].read())
+            body = json.loads(
+                s3_client.get_object(Bucket=_BUCKET, Key=key)["Body"].read()
+            )
             assert body["query_id"] == query_id
             assert "boom" in body["error"]
         finally:
             s3_client.delete_object(Bucket=_BUCKET, Key=key)
 
-    def test_success_path_does_not_write_to_s3(self, s3_client: Any, dynamodb_table: Any) -> None:
+    def test_success_path_does_not_write_to_s3(
+        self, s3_client: Any, dynamodb_table: Any
+    ) -> None:
         query_id = "integ-handler-success-002"
         key = _s3_key(query_id)
         try:
@@ -68,7 +76,9 @@ class TestHandlerIntegration:
         finally:
             dynamodb_table.delete_item(Key={"query_id": query_id})
 
-    def test_failure_path_does_not_write_to_dynamodb(self, dynamodb_table: Any, s3_client: Any) -> None:
+    def test_failure_path_does_not_write_to_dynamodb(
+        self, dynamodb_table: Any, s3_client: Any
+    ) -> None:
         query_id = "integ-handler-failure-002"
         key = _s3_key(query_id)
         try:
