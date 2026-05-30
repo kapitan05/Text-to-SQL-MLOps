@@ -1,0 +1,1 @@
+{"question":"How many orders?","context":"CREATE TABLE orders(id INT,amount REAL);"}
