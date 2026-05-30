@@ -25,26 +25,22 @@ def ping() -> Response:
 @app.post("/invocations")  # type: ignore[untyped-decorator]
 def invocations() -> Response:
     data = request.get_json(force=True)
-    question: str = str(data.get("question", "")).lower()
+    context: str = str(data.get("context", ""))
 
-    if "count" in question or "how many" in question:
-        sql = "SELECT COUNT(*) FROM orders"
-    elif "total" in question or "sum" in question:
-        sql = "SELECT status, SUM(amount) FROM orders GROUP BY status"
-    elif "expensive" in question or "most" in question:
-        sql = "SELECT * FROM orders ORDER BY amount DESC LIMIT 5"
-    elif "more than" in question or "having" in question:
-        sql = "SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 3"
-    elif "join" in question or "name" in question:
-        sql = (
-            "SELECT o.id, c.name FROM orders o JOIN customers c ON o.customer_id = c.id"
-        )
-    elif "above" in question or "average" in question:
-        sql = "SELECT * FROM products WHERE price > (SELECT AVG(price) FROM products)"
-    else:
-        sql = "SELECT * FROM orders"
+    # Extract first table name from DDL so the SQL is always valid for the given schema.
+    # Purpose: verify infrastructure pipeline, not SQL correctness.
+    import re
+
+    match = re.search(r"CREATE\s+TABLE\s+(\w+)", context, re.IGNORECASE)
+    table = match.group(1) if match else "t"
+    sql = f"SELECT * FROM {table} LIMIT 1"
 
     return jsonify({"sql": sql})
+
+
+@app.post("/endpoints/<string:name>/invocations")  # type: ignore[untyped-decorator]
+def endpoint_invocations(name: str) -> Response:
+    return invocations()
 
 
 if __name__ == "__main__":
