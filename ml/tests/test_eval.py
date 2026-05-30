@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from unittest.mock import MagicMock, patch
 
 from training.eval import _create_conn, _execute_safe, compute_execution_accuracy
@@ -48,13 +47,17 @@ class TestExecutionAccuracy:
     @patch("training.eval._generate_sql", return_value="SELECT COUNT(*) FROM orders")
     def test_perfect_accuracy(self, _mock: MagicMock) -> None:
         examples = [self._make_example()] * 5
-        acc = compute_execution_accuracy(MagicMock(), MagicMock(), examples, sample_size=5)
+        acc = compute_execution_accuracy(
+            MagicMock(), MagicMock(), examples, sample_size=5
+        )
         assert acc == 1.0
 
     @patch("training.eval._generate_sql", return_value="SELECT * FROM nonexistent")
     def test_zero_accuracy_on_invalid_sql(self, _mock: MagicMock) -> None:
         examples = [self._make_example()] * 5
-        acc = compute_execution_accuracy(MagicMock(), MagicMock(), examples, sample_size=5)
+        acc = compute_execution_accuracy(
+            MagicMock(), MagicMock(), examples, sample_size=5
+        )
         assert acc == 0.0
 
     def test_empty_examples_returns_zero(self) -> None:

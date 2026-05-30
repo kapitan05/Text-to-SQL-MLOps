@@ -20,8 +20,13 @@ class LoRAAdapterConfig(BaseModel):
     bias: str = "none"
     task_type: str = "CAUSAL_LM"
     target_modules: list[str] = [
-        "q_proj", "k_proj", "v_proj", "o_proj",
-        "gate_proj", "up_proj", "down_proj",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
     ]
 
 
@@ -46,7 +51,9 @@ def load_base_model(
     qlora_cfg: QLoRAConfig,
     trust_remote_code: bool = True,
 ) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=trust_remote_code)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_id, trust_remote_code=trust_remote_code
+    )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"

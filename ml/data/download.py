@@ -4,6 +4,7 @@
 Run before starting training on Vast.ai:
     PYTHONPATH=. uv run python data/download.py --model microsoft/Phi-3-mini-4k-instruct
 """
+
 from __future__ import annotations
 
 import argparse
@@ -36,6 +37,8 @@ def main(model_id: str, trust_remote_code: bool = True) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="microsoft/Phi-3-mini-4k-instruct")
-    parser.add_argument("--no-trust-remote-code", action="store_false", dest="trust_remote_code")
+    parser.add_argument(
+        "--no-trust-remote-code", action="store_false", dest="trust_remote_code"
+    )
     args = parser.parse_args()
     main(args.model, args.trust_remote_code)

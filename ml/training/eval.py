@@ -46,8 +46,9 @@ def _generate_sql(
             do_sample=False,
             pad_token_id=tokenizer.eos_token_id,
         )
-    new_tokens = outputs[0][inputs["input_ids"].shape[1]:]
-    return tokenizer.decode(new_tokens, skip_special_tokens=True).strip().split("\n")[0]
+    new_tokens = outputs[0][inputs["input_ids"].shape[1] :]
+    decoded = tokenizer.decode(new_tokens, skip_special_tokens=True)
+    return str(decoded.strip().split("\n")[0])
 
 
 def compute_execution_accuracy(
@@ -56,7 +57,8 @@ def compute_execution_accuracy(
     examples: list[dict[str, Any]],
     sample_size: int = 100,
 ) -> float:
-    """EX metric: fraction of generated SQLs that return the same rows as the gold SQL."""
+    """EX metric: fraction of generated SQLs that return the same rows as
+    the gold SQL."""
     sample = examples[:sample_size]
     if not sample:
         return 0.0

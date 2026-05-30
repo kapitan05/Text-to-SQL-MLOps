@@ -1,4 +1,5 @@
 """Standalone preprocessing utilities for inspection and offline dataset building."""
+
 from __future__ import annotations
 
 import polars as pl

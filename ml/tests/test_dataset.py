@@ -24,7 +24,9 @@ class TestSQLExample:
 
 class TestPrompts:
     def test_build_prompt_contains_all_parts(self) -> None:
-        prompt = build_prompt("CREATE TABLE t (id INT);", "Count rows", "SELECT COUNT(*) FROM t")
+        prompt = build_prompt(
+            "CREATE TABLE t (id INT);", "Count rows", "SELECT COUNT(*) FROM t"
+        )
         assert SYSTEM_PROMPT in prompt
         assert "CREATE TABLE t" in prompt
         assert "Count rows" in prompt

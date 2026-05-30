@@ -4,7 +4,14 @@ import logging
 from typing import Any
 
 import mlflow
-from transformers import TrainerCallback, TrainerControl, TrainerState, TrainingArguments
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    TrainerCallback,
+    TrainerControl,
+    TrainerState,
+    TrainingArguments,
+)
 
 from training.eval import compute_execution_accuracy
 
@@ -17,7 +24,7 @@ class MLflowExecutionAccuracyCallback(TrainerCallback):
     def __init__(
         self,
         val_examples: list[dict[str, Any]],
-        tokenizer: Any,
+        tokenizer: AutoTokenizer,
         sample_size: int = 100,
         log_every_n_evals: int = 1,
     ) -> None:
@@ -32,8 +39,8 @@ class MLflowExecutionAccuracyCallback(TrainerCallback):
         args: TrainingArguments,
         state: TrainerState,
         control: TrainerControl,
-        model: Any = None,
-        **kwargs: Any,
+        model: AutoModelForCausalLM | None = None,
+        **kwargs: object,
     ) -> None:
         self._eval_count += 1
         if self._eval_count % self.log_every_n_evals != 0:
