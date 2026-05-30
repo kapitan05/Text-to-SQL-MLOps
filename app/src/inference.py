@@ -11,6 +11,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 logger = logging.getLogger(__name__)
 
 ENDPOINT_NAME = os.environ.get("SAGEMAKER_ENDPOINT_NAME", "text2sql-inference")
+_RUNTIME_ENDPOINT = os.environ.get("SAGEMAKER_RUNTIME_ENDPOINT_URL") or None
 
 _RETRY = retry(
     stop=stop_after_attempt(3),
@@ -21,7 +22,7 @@ _RETRY = retry(
 
 @_RETRY
 def generate_sql(question: str, context: str) -> str:
-    client = boto3.client("sagemaker-runtime")
+    client = boto3.client("sagemaker-runtime", endpoint_url=_RUNTIME_ENDPOINT)
     payload = json.dumps({"question": question, "context": context})
     logger.info("Invoking SageMaker endpoint for question: %.80s", question)
     t0 = time.monotonic()
