@@ -10,6 +10,7 @@ from typing import Any
 from flask import Flask, Response, jsonify, request
 from llama_cpp import Llama
 from prometheus_client import (
+    REGISTRY,
     Counter,
     Gauge,
     Histogram,
@@ -54,7 +55,9 @@ def _push_loop() -> None:
     while True:
         time.sleep(_PUSH_INTERVAL)
         try:
-            push_to_gateway(PUSHGATEWAY_URL, job="text2sql-sagemaker")
+            push_to_gateway(
+                PUSHGATEWAY_URL, job="text2sql-sagemaker", registry=REGISTRY
+            )
         except Exception:
             logger.warning("metrics push failed", exc_info=True)
 
@@ -97,8 +100,11 @@ def metrics() -> Response:
 @app.post("/invocations")
 def invocations() -> tuple[Response, int]:
     data: Any = request.get_json(force=True)
-    question: str = data["question"]
-    context: str = data["context"]
+    question: str = str(data.get("question", ""))
+    context: str = str(data.get("context", ""))
+
+    if not question or not context:
+        return jsonify({"error": "question and context are required"}), 400
 
     prompt = build_prompt(context, question)
     t0 = time.monotonic()
@@ -111,9 +117,12 @@ def invocations() -> tuple[Response, int]:
         )
         elapsed = time.monotonic() - t0
         _inference_duration.observe(elapsed)
+        choices: list[Any] = response.get("choices") or []
+        if not choices:
+            raise ValueError("model returned no choices")
         _invocations_total.labels(status="success").inc()
         logger.info("Inference done in %.1fs for question: %.80s", elapsed, question)
-        raw: str = str(response["choices"][0]["text"]).strip()
+        raw: str = str(choices[0]["text"]).strip()
         sql = raw.split("\n")[0]
         return jsonify({"sql": sql}), 200
     except Exception:
@@ -123,4 +132,4 @@ def invocations() -> tuple[Response, int]:
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, threaded=True)
