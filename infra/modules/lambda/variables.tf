@@ -34,3 +34,8 @@ variable "sagemaker_endpoint_name" {
 variable "sagemaker_endpoint_arn" {
   type = string
 }
+
+variable "pushgateway_url" {
+  type        = string
+  description = "URL of the Pushgateway on the monitoring EC2 instance"
+}

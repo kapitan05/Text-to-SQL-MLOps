@@ -18,3 +18,23 @@ output "failed_sql_bucket" {
 output "dynamodb_table_name" {
   value = module.dynamodb.table_name
 }
+
+output "monitoring_pushgateway_url" {
+  description = "Pushgateway URL — set as PUSHGATEWAY_URL in Lambda and SageMaker"
+  value       = module.monitoring.pushgateway_url
+}
+
+output "monitoring_grafana_url" {
+  description = "Grafana UI (admin / <grafana_password>)"
+  value       = module.monitoring.grafana_url
+}
+
+output "monitoring_public_ip" {
+  description = "Elastic IP of the monitoring EC2 instance"
+  value       = module.monitoring.public_ip
+}
+
+output "monitoring_mlflow_url" {
+  description = "MLflow tracking server URL"
+  value       = module.monitoring.mlflow_url
+}
