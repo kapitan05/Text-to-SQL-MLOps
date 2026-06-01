@@ -24,6 +24,9 @@ resource "aws_sagemaker_model" "inference" {
 
   primary_container {
     image = var.sagemaker_image_uri
+    environment = {
+      PUSHGATEWAY_URL = var.pushgateway_url
+    }
   }
 }
 
@@ -34,7 +37,7 @@ resource "aws_sagemaker_endpoint_configuration" "inference" {
     variant_name           = "primary"
     model_name             = aws_sagemaker_model.inference.name
     initial_instance_count = 1
-    instance_type          = "ml.m5.xlarge"
+    instance_type          = "ml.g4dn.xlarge"
   }
 }
 

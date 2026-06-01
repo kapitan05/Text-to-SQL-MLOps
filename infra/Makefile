@@ -1,9 +1,13 @@
-.PHONY: init validate plan apply destroy
+.PHONY: init validate plan apply destroy outputs
 
-TF_STATE_BUCKET ?= $(error TF_STATE_BUCKET is required, e.g. make init TF_STATE_BUCKET=my-tf-state)
-ECR_IMAGE_URI   ?= $(error ECR_IMAGE_URI is required, e.g. make plan ECR_IMAGE_URI=123.dkr.ecr.eu-north-1.amazonaws.com/text2sql:latest)
+TF_STATE_BUCKET    ?= $(error TF_STATE_BUCKET is required)
+ECR_IMAGE_URI      ?= $(error ECR_IMAGE_URI is required)
+SAGEMAKER_IMAGE_URI ?= $(error SAGEMAKER_IMAGE_URI is required)
+GRAFANA_PASSWORD   ?= $(error GRAFANA_PASSWORD is required)
 
-TF_VARS := -var="ecr_image_uri=$(ECR_IMAGE_URI)"
+TF_VARS := -var="ecr_image_uri=$(ECR_IMAGE_URI)" \
+           -var="sagemaker_image_uri=$(SAGEMAKER_IMAGE_URI)" \
+           -var="grafana_password=$(GRAFANA_PASSWORD)"
 
 init:
 	terraform init -backend-config="bucket=$(TF_STATE_BUCKET)"
@@ -21,3 +25,6 @@ apply:
 destroy:
 	@read -p "DESTROY prod infra? [y/N] " confirm && [ "$$confirm" = "y" ]
 	terraform destroy $(TF_VARS)
+
+outputs:
+	terraform output

@@ -74,6 +74,7 @@ resource "aws_lambda_function" "inference" {
       DYNAMODB_TABLE          = var.dynamodb_table_name
       FAILED_SQL_BUCKET       = var.failed_sql_bucket
       SAGEMAKER_ENDPOINT_NAME = var.sagemaker_endpoint_name
+      PUSHGATEWAY_URL         = var.pushgateway_url
     }
   }
 }
