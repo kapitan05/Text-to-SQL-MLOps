@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Single target: both Lambda and SageMaker push metrics here.
+  # Lambda pushes after every invocation; SageMaker pushes every 15s via background thread.
+  - job_name: pushgateway
+    honor_labels: true
+    static_configs:
+      - targets: ["pushgateway:9091"]
