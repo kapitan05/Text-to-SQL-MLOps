@@ -29,4 +29,4 @@ RUN printf '#!/bin/sh\nexec python3 /serve.py\n' > /usr/local/bin/serve && \
     chmod +x /usr/local/bin/serve
 
 EXPOSE 8080
-CMD ["serve"]
+CMD ["/usr/local/bin/serve"]
