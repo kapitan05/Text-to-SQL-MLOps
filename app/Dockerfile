@@ -11,7 +11,8 @@ COPY pyproject.toml ./
 RUN uv pip install --system --target ${LAMBDA_TASK_ROOT} \
         "pydantic>=2.8.0" \
         "boto3>=1.35.0" \
-        "tenacity>=8.5.0"
+        "tenacity>=8.5.0" \
+        "prometheus-client>=0.19.0"
 
 COPY src/ ${LAMBDA_TASK_ROOT}/src/
 
