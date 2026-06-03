@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 import boto3
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+from src import metrics
 from src.schemas import DynamoResultItem
 
 if TYPE_CHECKING:
@@ -38,3 +39,7 @@ def write_result(item: DynamoResultItem) -> None:
     data["latency_ms"] = Decimal(str(data["latency_ms"]))
     _get_table().put_item(Item=data)
     logger.info("Wrote result for query_id=%s", item.query_id)
+    try:
+        metrics.current().dynamo_writes.labels(status="success").inc()
+    except Exception:
+        pass
