@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 import boto3
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+from src import metrics
 from src.schemas import FailedSQLLog
 
 if TYPE_CHECKING:
@@ -43,3 +44,7 @@ def log_failed_sql(log: FailedSQLLog) -> None:
         ContentType="application/json",
     )
     logger.info("Logged failed SQL query_id=%s key=%s", log.query_id, key)
+    try:
+        metrics.current().s3_logs.labels(status="success").inc()
+    except Exception:
+        pass

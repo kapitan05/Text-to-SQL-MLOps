@@ -26,7 +26,7 @@ build:
 	docker compose build lambda
 
 lambda-up:
-	docker compose up --build
+	docker compose up --build -d
 
 lambda-down:
 	docker compose down

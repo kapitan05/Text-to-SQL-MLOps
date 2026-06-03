@@ -1,5 +1,5 @@
 .PHONY: lint format typecheck test test-int localstack-up localstack-down \
-        airflow-up airflow-down build check
+        airflow-up airflow-down build check monitoring-up monitoring-down evidently-report
 
 lint:
 	$(MAKE) -C app lint
@@ -36,3 +36,16 @@ build:
 	$(MAKE) -C app build
 
 check: lint typecheck test
+
+monitoring-up:
+	docker compose -f monitoring/docker-compose.yml up -d
+
+monitoring-down:
+	docker compose -f monitoring/docker-compose.yml down
+
+evidently-report:
+	DYNAMODB_TABLE=query_results \
+	FAILED_SQL_BUCKET=text2sql-failed-sql \
+	MONITORING_BUCKET=text2sql-failed-sql \
+	MLFLOW_TRACKING_URI=$$(cd infra && terraform output -raw monitoring_mlflow_url 2>/dev/null || echo "http://localhost:5000") \
+	uv run --directory monitoring python evidently_report.py
