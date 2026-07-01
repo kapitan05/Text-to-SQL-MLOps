@@ -13,3 +13,4 @@ CLAUDE.md
 .terraform.lock.hcl
 .terraform/
 MONITORING_PLAN.md
+models/
