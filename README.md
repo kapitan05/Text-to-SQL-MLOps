@@ -42,7 +42,7 @@
 ## Engineering Highlights
 
 **ML & Training**
-- QLoRA fine-tune: 4-bit NF4 quantisation (BitsAndBytes) + LoRA r=64, α=128 on all 7 attention/FFN projections
+- QLoRA fine-tune: 4-bit NF4 quantisation + LoRA r=64, α=128 on all 7 attention/FFN projections
 - Dataset: `b-mc2/sql-create-context` · 78k examples · 95/5 train/val split · 3 epochs
 - **Execution Accuracy (EX)** metric — generates SQL, runs predicted vs gold against in-memory SQLite, compares row sets
 - MLflow tracks: loss curves, EX per eval step, hyperparams, GGUF artifact
