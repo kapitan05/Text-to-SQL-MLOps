@@ -18,9 +18,9 @@ RUN apt-get update && \
 
 RUN pip3 install --no-cache-dir cmake ninja scikit-build-core
 
-# GGML_CUDA for llama-cpp-python >=0.2.80; LLAMA_CUBLAS kept for older; unknown
-# flags are ignored. CUDA_ARCHITECTURES=75 pins the T4 kernel target.
-RUN CMAKE_ARGS="-DGGML_CUDA=on -DLLAMA_CUBLAS=on -DCMAKE_CUDA_ARCHITECTURES=75" \
+# CUDA_ARCHITECTURES=75 pins the T4 kernel target. (Do NOT add the deprecated
+# LLAMA_CUBLAS flag — recent llama.cpp fails the configure step on it.)
+RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=75" \
     FORCE_CMAKE=1 \
     pip3 wheel --no-deps -w /wheels "llama-cpp-python<0.3.0"
 
