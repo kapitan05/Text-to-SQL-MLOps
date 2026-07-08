@@ -133,6 +133,7 @@ jobs:
           context: app
           file: app/Dockerfile
           platforms: linux/arm64
+          provenance: false
           push: true
           tags: |
             ${{ steps.identity.outputs.account_id }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.LAMBDA_REPO }}:${{ github.sha }}
@@ -160,6 +161,7 @@ jobs:
           context: .
           file: sagemaker/Dockerfile
           platforms: linux/amd64
+          provenance: false
           push: true
           tags: |
             ${{ steps.identity.outputs.account_id }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.SAGEMAKER_REPO }}:${{ github.sha }}

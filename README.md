@@ -107,6 +107,33 @@ SmartSearch/
 
 ---
 
+## Documentation
+
+**Runbooks — how to run each part:**
+
+| Guide | Covers |
+|---|---|
+| [`docs/run_local.md`](docs/run_local.md) | Full local dev stack (LocalStack + fake-sagemaker + Lambda RIE), tests, load test |
+| [`docs/run_training.md`](docs/run_training.md) | QLoRA pipeline: setup → download → train → export → GGUF (Vast.ai + local) |
+| [`docs/run_serving.md`](docs/run_serving.md) | SageMaker inference container: build, env vars, endpoints, local run |
+| [`docs/run_monitoring.md`](docs/run_monitoring.md) | Prometheus/Grafana metrics flow + Evidently data-quality DAG |
+| [`docs/run_deploy.md`](docs/run_deploy.md) | Build + push ECR images, Terraform apply, E2E test, CI/CD |
+
+Setup: copy [`.env.example`](.env.example) → `.env`. Full command reference:
+[`docs/makefile_guide.md`](docs/makefile_guide.md).
+
+**Design reports — why it's built this way:**
+[phase1 (ML)](docs/phase1_report.md) ·
+[phase2 (app)](docs/phase2_report.md) ·
+[phase3 (infra)](docs/phase3_report.md) ·
+[phase4 (Airflow)](docs/phase4_report.md) ·
+[phase5 (monitoring)](docs/phase5_report.md) ·
+[SageMaker migration](docs/sagemaker_report.md) ·
+[tests](docs/tests_report.md) ·
+[AWS deploy (long-form)](docs/aws_deploy_plan.md)
+
+---
+
 ## Quick Start (Local)
 
 ```bash

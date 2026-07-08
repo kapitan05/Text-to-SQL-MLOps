@@ -25,7 +25,8 @@ resource "aws_sagemaker_model" "inference" {
   primary_container {
     image = var.sagemaker_image_uri
     environment = {
-      PUSHGATEWAY_URL = var.pushgateway_url
+      PUSHGATEWAY_URL    = var.pushgateway_url
+      MODEL_N_GPU_LAYERS = "-1" # all layers on the T4 (image now compiled for sm_75)
     }
   }
 }

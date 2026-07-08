@@ -1,0 +1,10 @@
+{
+  "folders": [
+    { "name": "app", "path": "app" },
+    { "name": "ml", "path": "ml" },
+    { "name": "root", "path": "." }
+  ],
+  "settings": {
+    "python.testing.unittestEnabled": false
+  }
+}

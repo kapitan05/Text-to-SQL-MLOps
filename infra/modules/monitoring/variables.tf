@@ -29,3 +29,11 @@ variable "failed_sql_bucket_arn" {
   type        = string
   description = "ARN of the failed-SQL S3 bucket (for Evidently read/write access)"
 }
+
+variable "vpc_id" {
+  type = string
+}
+
+variable "subnet_id" {
+  type = string
+}

@@ -11,6 +11,10 @@ x-airflow-common: &airflow-common
     AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+    DYNAMODB_TABLE: ${DYNAMODB_TABLE:-query_results}
+    FAILED_SQL_BUCKET: ${FAILED_SQL_BUCKET:-text2sql-failed-sql}
+    MONITORING_BUCKET: ${MONITORING_BUCKET:-text2sql-failed-sql}
+    MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-http://localhost:5000}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
@@ -38,10 +42,7 @@ services:
       bash -c "
         pip install -r /requirements.txt &&
         airflow db migrate &&
-        airflow users create
-          --username admin --password admin
-          --firstname Admin --lastname User
-          --role Admin --email admin@example.com
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
       "
     restart: on-failure
 

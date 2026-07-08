@@ -5,7 +5,8 @@ Sends N requests through API Gateway → Kinesis → Lambda → SageMaker → Dy
 polls DynamoDB for results, and reports accuracy vs gold SQL.
 
 Usage:
-  export API_GW_URL=https://<id>.execute-api.us-east-1.amazonaws.com/<stage>
+  # Either the stage base or the full endpoint works:
+  export API_GW_URL=$(cd ../infra && terraform output -raw api_endpoint)
   export AWS_REGION=us-east-1              # default us-east-1
   export DYNAMODB_TABLE=query_results      # default query_results
   uv run python scripts/aws_load_test.py --samples 20 --workers 4
@@ -20,6 +21,7 @@ import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from typing import Any
 
 import boto3
@@ -27,11 +29,16 @@ import requests
 from datasets import load_dataset
 
 API_GW_URL = os.environ["API_GW_URL"].rstrip("/")
+# Accept either the stage base (.../prod) or the full endpoint (.../prod/query,
+# as returned by `terraform output -raw api_endpoint`) — don't double-append.
+QUERY_URL = API_GW_URL if API_GW_URL.endswith("/query") else f"{API_GW_URL}/query"
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "query_results")
+FAILED_SQL_BUCKET = os.environ.get("FAILED_SQL_BUCKET", "text2sql-failed-sql")
 
 _dynamo = boto3.resource("dynamodb", region_name=AWS_REGION)
 _table = _dynamo.Table(DYNAMODB_TABLE)
+_s3 = boto3.client("s3", region_name=AWS_REGION)
 
 
 @dataclass
@@ -98,34 +105,54 @@ def _send_request(case: TestCase) -> None:
         "context": case.context,
     }
     resp = requests.post(
-        f"{API_GW_URL}/query",
+        QUERY_URL,
         json=payload,
         timeout=10,
     )
     resp.raise_for_status()
 
 
-def _poll_dynamo(
-    query_id: str, timeout_s: int = 120, interval_s: int = 5
-) -> dict[str, Any]:
+def _poll_result(
+    query_id: str, timeout_s: int = 120, interval_s: int = 3
+) -> tuple[str, dict[str, Any]]:
+    """Watch DynamoDB (success) AND S3 (failure) until one appears.
+
+    The Lambda writes DynamoDB only on success and an S3 object only on failure, so
+    polling DynamoDB alone makes every failure look like a timeout. Returns
+    ("success", item) or ("failed", failure_log); raises TimeoutError only when
+    neither ever shows up (e.g. the record never reached the Lambda).
+    """
     deadline = time.monotonic() + timeout_s
     while time.monotonic() < deadline:
-        resp = _table.get_item(Key={"query_id": query_id})
-        item = resp.get("Item")
+        item = _table.get_item(Key={"query_id": query_id}).get("Item")
         if item:
-            return dict(item)
+            return "success", dict(item)
+
+        key = f"failed_sql/{datetime.now(UTC).strftime('%Y/%m/%d')}/{query_id}.json"
+        try:
+            body = _s3.get_object(Bucket=FAILED_SQL_BUCKET, Key=key)["Body"].read()
+            return "failed", json.loads(body)
+        except _s3.exceptions.NoSuchKey:
+            pass
+        except Exception:
+            pass  # missing bucket / permissions shouldn't abort the poll
+
         time.sleep(interval_s)
-    raise TimeoutError(f"No DynamoDB result after {timeout_s}s")
+    raise TimeoutError(f"No result in DynamoDB or S3 after {timeout_s}s")
 
 
 def _run_case(case: TestCase) -> TestCase:
     try:
         _send_request(case)
         t0 = time.monotonic()
-        item = _poll_dynamo(case.query_id)
+        kind, data = _poll_result(case.query_id)
         case.latency_ms = int((time.monotonic() - t0) * 1000)
-        case.status = str(item.get("status", "unknown"))
-        case.generated_sql = str(item.get("sql", ""))
+        if kind == "success":
+            case.status = str(data.get("status", "success"))
+            case.generated_sql = str(data.get("sql", ""))
+        else:
+            case.status = "failed"
+            case.error = str(data.get("error", "inference/SQL failure (logged to S3)"))
     except TimeoutError:
         case.status = "timeout"
     except Exception as exc:
@@ -158,7 +185,7 @@ def main() -> None:
     print(f"Loading {args.samples} samples from b-mc2/sql-create-context …")
     cases = _load_cases(args.samples)
     print(
-        f"Sending {len(cases)} requests to {API_GW_URL} with {args.workers} workers …\n"
+        f"Sending {len(cases)} requests to {QUERY_URL} with {args.workers} workers …\n"
     )
 
     report = Report(total=len(cases))
