@@ -1,6 +1,8 @@
 .PHONY: lint format typecheck test download train train-docker export gguf mlflow-ui check
 
-MERGED_DIR ?= outputs/merged
+BASE_MODEL ?= microsoft/Phi-3-mini-4k-instruct
+ADAPTER    ?= outputs/checkpoints/final_adapter
+MERGED_DIR ?= outputs/merged_model
 GGUF_OUT   ?= outputs/gguf
 
 lint:
@@ -31,7 +33,10 @@ train-docker:
 		text2sql-ml
 
 export:
-	PYTHONPATH=. uv run python export/merge_and_export.py
+	PYTHONPATH=. uv run python export/merge_and_export.py \
+		--base-model $(BASE_MODEL) \
+		--adapter $(ADAPTER) \
+		--output-dir $(MERGED_DIR)
 
 gguf:
 	@test -n "$(MERGED_DIR)" || (echo "Usage: make gguf MERGED_DIR=<path> GGUF_OUT=<path>" && exit 1)
