@@ -44,8 +44,5 @@ monitoring-down:
 	docker compose -f monitoring/docker-compose.yml down
 
 evidently-report:
-	DYNAMODB_TABLE=query_results \
-	FAILED_SQL_BUCKET=text2sql-failed-sql \
-	MONITORING_BUCKET=text2sql-failed-sql \
-	MLFLOW_TRACKING_URI=$$(cd infra && terraform output -raw monitoring_mlflow_url 2>/dev/null || echo "http://localhost:5000") \
-	uv run --directory monitoring python evidently_report.py
+	docker compose -f airflow/docker-compose.yml exec airflow-scheduler \
+	  airflow dags trigger daily_monitoring

@@ -30,6 +30,9 @@ _PUSH_INTERVAL = int(os.environ.get("METRICS_PUSH_INTERVAL", "15"))
 _GGUF_PATH = os.environ.get("GGUF_PATH", "/opt/ml/model/model_q4_k_m.gguf")
 _N_CTX = int(os.environ.get("MODEL_N_CTX", "512"))
 _N_THREADS = int(os.environ.get("MODEL_N_THREADS", "4"))
+# -1 = offload all layers to GPU; 0 = CPU-only (slower but avoids GPU/driver
+# segfaults — use to isolate serving issues from GPU-offload issues).
+_N_GPU_LAYERS = int(os.environ.get("MODEL_N_GPU_LAYERS", "-1"))
 
 # ── Metrics (global registry — cumulative across all requests) ────────────────
 
@@ -71,7 +74,7 @@ def _get_model() -> Llama:
     t0 = time.monotonic()
     model = Llama(
         model_path=_GGUF_PATH,
-        n_gpu_layers=-1,
+        n_gpu_layers=_N_GPU_LAYERS,
         n_ctx=_N_CTX,
         n_threads=_N_THREADS,
         verbose=False,
