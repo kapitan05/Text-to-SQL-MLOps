@@ -1,4 +1,4 @@
-# SmartSearch — Text-to-SQL MLOps Pipeline
+# Text-to-SQL MLOps Pipeline
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-SageMaker%20%7C%20Lambda%20%7C%20Kinesis-FF9900?logo=amazonaws&logoColor=white)
