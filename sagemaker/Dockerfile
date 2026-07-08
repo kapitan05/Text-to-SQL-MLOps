@@ -41,7 +41,9 @@ RUN pip3 install --no-cache-dir \
     "pydantic>=2.8.0" \
     "prometheus-client>=0.19.0"
 
-RUN python3 -c "from llama_cpp import Llama"
+# No import sanity-check here: the CUDA-linked libllama.so needs libcuda.so.1,
+# which only the NVIDIA runtime injects on the GPU host — it cannot load at
+# build time. First real verification is /ping on the endpoint.
 
 COPY models/model_q4_k_m.gguf /opt/ml/model/model_q4_k_m.gguf
 COPY sagemaker/serve.py /serve.py
