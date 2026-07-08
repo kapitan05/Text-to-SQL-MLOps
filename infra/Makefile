@@ -10,7 +10,7 @@ TF_VARS := -var="ecr_image_uri=$(ECR_IMAGE_URI)" \
            -var="grafana_password=$(GRAFANA_PASSWORD)"
 
 init:
-	terraform init -backend-config="bucket=$(TF_STATE_BUCKET)"
+	terraform init -backend-config="bucket=$(TF_STATE_BUCKET)" -reconfigure
 
 validate:
 	terraform validate

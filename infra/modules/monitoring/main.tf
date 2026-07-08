@@ -15,6 +15,7 @@ data "aws_ami" "al2023" {
 
 resource "aws_security_group" "monitoring" {
   name        = "${var.project}-monitoring"
+  vpc_id      = var.vpc_id
   description = "Prometheus + Pushgateway + Grafana"
 
   # Pushgateway — Lambda and SageMaker push from the public internet
@@ -120,6 +121,7 @@ resource "aws_iam_instance_profile" "monitoring" {
 resource "aws_instance" "monitoring" {
   ami                    = data.aws_ami.al2023.id
   instance_type          = "t3.small"
+  subnet_id              = var.subnet_id
   key_name               = var.key_name != "" ? var.key_name : null
   vpc_security_group_ids = [aws_security_group.monitoring.id]
   iam_instance_profile   = aws_iam_instance_profile.monitoring.name
